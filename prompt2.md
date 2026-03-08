@@ -1,3 +1,6 @@
+NOTE POUR L'AGENT IA, NE PAS LIRE CE FICHIER !
+
+
 Le fichier fusion.py est un petit utilitaire Python 3 qui lit un fichier GEDCOM, fusionne les doublons d’individus puis de familles, valide le résultat et écrit le GEDCOM nettoyé dans un second fichier.
 
 🛠 Fonctionnalités implémentées

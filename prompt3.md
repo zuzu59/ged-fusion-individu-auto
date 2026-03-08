@@ -1,3 +1,6 @@
+NOTE POUR L'AGENT IA, NE PAS LIRE CE FICHIER !
+
+
 Ecrit un script en python 3, fusion.py, qui fusionne les doublons d'individus ayant exactement le même nom, prénom et date de naissance du fichier input.ged
 
 Dans une première passe:
