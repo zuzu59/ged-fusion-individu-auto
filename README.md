@@ -7,9 +7,14 @@ Petit script en python pour fusionner automatiquement des individus qui ont le N
 python3 fusion.py input.ged output.ged
 ```
 
-Le script produit un nouveau fichier GEDCOM où les individus dupliqués
-(Nom/Prénom/Date de naissance identiques) ne figurent qu'une seule fois.
-Il remplace également dans les enregistrements familiaux toutes les
-références aux identifiants supprimés par celui de l'individu conservé,
-ce qui évite des « orphelins » comme Jean Louis Bertrand ZUFFEREY.
+Le script produit un nouveau fichier GEDCOM où :
+
+* les individus dupliqués (Nom/Prénom/Date de naissance identiques) ne
+  figurent qu'une seule fois ;
+* les familles redondantes (même mari, même épouse et mêmes enfants,
+  après canonicisation des individus) sont supprimées.
+
+Toutes les références aux identifiants supprimés sont remplacées par
+celui de l'élément conservé, que ce soit dans les enregistrements
+individuels ou familiaux, ce qui évite des « orphelins ».
 
