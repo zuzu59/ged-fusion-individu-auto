@@ -1,11 +1,15 @@
 Ecrit un petit script, fusion.py, en python 3 qui:
 
-* Fusionne les individus ayant exactement le même Nom, Prénom et date de naissance.
+Dans une première passe:
+
+* Depuis le fichier, input.ged, fusionne les individus ayant exactement le même nom, prénom et date de naissance.
 
 * Maintient les liaisons fraternelles : toutes les références (FAMC, FAMS, etc.) sont réécrites.
 
-* Supprime aussi les doublons de familles : les enregistrements FAM avec le même mari, la même épouse et les mêmes enfants (après canonisation des individus) ne sont conservés qu’une seule fois.
+Dans une deuxième passe:
 
-* Effectue une validation GEDCOM exhaustive
+* Supprime aussi les doublons de familles : les enregistrements FAM avec le même mari, la même épouse et les mêmes enfants (après canonisation des individus) ne sont conservés qu’une seule fois. Et fais-le autant de fois que nécéssaire !
+
+* Elimine les 'duplicate occurrence of label'
 
 * Sauvegarde le résultat dans le fichier output.ged
