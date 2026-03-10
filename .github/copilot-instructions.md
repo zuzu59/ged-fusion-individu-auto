@@ -8,12 +8,43 @@ Petit utilitaire en Python pour fusionner des fichiers GEDCOM
 `fusion.py`, qui lit un `.ged`, dédoublonne individus et familles
 et produit un GEDCOM nettoyé en sortie.
 
+> ⚠️ **État actuel** : pour l'instant la base du dépôt ne contient que
+quelques exemples `individu_*.ged` et ces instructions ; le code
+Python n'a pas encore été écrit. Une des premières tâches est de
+créer `fusion.py` et les modules associés, puis de définir des tests
+pytest dans `tests/`.
+
+# Architecture
+
+# Architecture
+
+Le cœur de l'application analysera plusieurs fichiers GEDCOM d'entrée,
+sauvegardera les informations dans une base SQLite pour détecter et
+éliminer les doublons, puis écrira un unique fichier de sortie
+contenant l'arbre fusionné. La bibliothèque `python-gedcom` est
+utilisée pour l'analyse/écriture, et le code doit être organisé en
+modules/classements clairs afin de faciliter les tests et l'évolution.
+
+# Organisation du dépôt
+
+- `individu_*.ged` : exemples de fichiers GEDCOM d'entrée fournis pour
+  le développement et les tests.
+- `fusion.py` : script principal (sera ajouté lorsque le code sera
+  implémenté).
+- `tests/` : répertoire destiné aux tests `pytest`.
+- `.github/` : contient cette instruction ainsi que les autres
+  documents de configuration.
+
 # Installation & exécution
 
 - Ce projet cible Python 3.
 - Installez la dépendance GEDCOM nécessaire :
   ```bash
   pip install python-gedcom
+  ```
+- Une fois le code en place, lancer les tests :
+  ```bash
+  pytest
   ```
 - Exemple d'utilisation :
   ```bash
@@ -22,6 +53,7 @@ et produit un GEDCOM nettoyé en sortie.
 - Les fichiers GEDCOM en entrée peuvent être validés :
   - visuellement avec Topola : https://pewu.github.io/topola-viewer/
   - syntaxiquement avec Ged‑Inline : https://ged-inline.org/
+
 
 # Style & conventions
 
