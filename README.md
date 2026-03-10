@@ -1,10 +1,11 @@
 # Petit script en python pour fusionner des fichiers gedcom
 
+zf26037.1630, zf 260310.1444
+
 📌 **État actuel** : le dépôt contient uniquement des exemples GEDCOM et
 des consignes. Le code sera ajouté dans `fusion.py` et des modules
 auxiliaires.
 
-zf26037.1630, zf 260310.1428
 
 ## Problématiques du projet
 J'ai un très grand arbre généalogique de 240'000 individus !
@@ -50,3 +51,10 @@ Et *Ged-Inline* pour la vérification *syntaxique* de la qualité du fichier GED
 https://ged-inline.org/
 
 
+## Astuces de travail
+
+### Comment diminuer la taille du prompt dans le terminal bash ?
+Il suffit simplement de faire ceci:
+```
+PS1='\$ '
+```
