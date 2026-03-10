@@ -1,6 +1,6 @@
 # Petit script en python pour fusionner des fichiers gedcom
 
-zf26037.1630, zf 260310.1444
+zf26037.1630, zf 260310.1450
 
 📌 **État actuel** : le dépôt contient uniquement des exemples GEDCOM et
 des consignes. Le code sera ajouté dans `fusion.py` et des modules
@@ -58,3 +58,8 @@ Il suffit simplement de faire ceci:
 ```
 PS1='\$ '
 ```
+On peut le rendre permanent avec:
+```bash
+echo -e "PS1='\$ '" >> ~/.bashrc
+```
+
