@@ -14,7 +14,6 @@ Python n'a pas encore été écrit. Une des premières tâches est de
 créer `fusion.py` et les modules associés, puis de définir des tests
 pytest dans `tests/`.
 
-# Architecture
 
 # Architecture
 
