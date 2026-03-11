@@ -1,86 +1,51 @@
 ---
 applyTo: "**/*.py"
 ---
-# Projet
 
-Petit utilitaire en Python pour fusionner des fichiers GEDCOM
-(extraits d'arbres généalogiques). Le script principal est
-`fusion.py`, qui lit un `.ged`, dédoublonne individus et familles
-et produit un GEDCOM nettoyé en sortie.
+# Instructions Agent : Fusionneur GEDCOM via SQLite
 
-> ⚠️ **État actuel** : pour l'instant la base du dépôt ne contient que
-quelques exemples `individu_*.ged` et ces instructions ; le code
-Python n'a pas encore été écrit. Une des premières tâches est de
-créer `fusion.py` et les modules associés, puis de définir des tests
-pytest dans `tests/`.
+## 1. Contexte du Projet
+- **Objectif** : Utilitaire Python pour fusionner plusieurs fichiers GEDCOM (`individu_*.ged`) en un seul (`output.ged`), en éliminant les doublons d'individus et de familles tout en préservant l'intégrité des liens de parenté.
+- **État actuel** : Projet vide. Première étape : créer `fusion.py` et l'architecture modulaire.
+- **Workflow global** : Import successif (Extraction) -> Stockage SQLite (Transit/Merge) -> Export GEDCOM (Output).
 
+## 2. Architecture Technique (Pipeline)
+L'Agent doit implémenter le flux suivant :
+1. **Extraction** : Parser chaque `individu_*.ged` source avec `python-gedcom`.
+2. **Staging SQLite** : Insérer les données dans une base `sqlite3` (en mémoire ou fichier).
+3. **Upsert Logique** : Identifier les doublons au moment de l'insertion pour ne pas polluer la base.
+4. **Export** : Reconstruire l'objet `Gedcom` final depuis SQLite et l'enregistrer.
 
-# Architecture
+## 3. Logique de Dé-doublonnage (Priorité Haute)
+L'Agent doit appliquer ces critères stricts pour identifier un individu déjà présent en base :
+- **Critère A** : `(Nom exact) + (Prénom exact) + (Date de naissance)`.
+- **Critère B (si date naissance NULL)** : `(Nom exact) + (Prénom exact) + (ID du Conjoint identique)`.
+- **Normalisation** : Les comparaisons de texte (noms/prénoms) doivent être insensibles à la casse (`LOWER`).
 
-Le cœur de l'application analysera plusieurs fichiers GEDCOM d'entrée,
-sauvegardera les informations dans une base SQLite pour détecter et
-éliminer les doublons, puis écrira un unique fichier de sortie
-contenant l'arbre fusionné. La bibliothèque `python-gedcom` est
-utilisée pour l'analyse/écriture, et le code doit être organisé en
-modules/classements clairs afin de faciliter les tests et l'évolution.
+## 4. Règles Métier & Intégrité
+### Gestion des Individus
+- **Mapping des IDs** : Créer une table de correspondance entre les XREFs originaux (`@I1@`, `@F1@`) et les IDs auto-incrémentés de SQLite.
+- **Fusion de données** : En cas de doublon, transférer/fusionner les tags `NOTE` et `SOUR` vers l'entrée conservée.
+- **Orphelins** : Un individu sans parents connus et non trouvé en base est marqué "Racine".
 
-# Organisation du dépôt
+### Gestion des Familles & Unions
+- **Identification Famille** : Une famille est unique par le couple `(ID_Mari + ID_Femme)`.
+- **Unions Multiples** : Un individu peut appartenir à plusieurs familles (plusieurs mariages). Ne jamais fusionner deux familles si l'un des conjoints diffère.
+- **Monoparentalité** : Accepter les familles avec un parent `NULL`. Une famille monoparentale est un doublon si elle a le même parent ET au moins un enfant commun avec une famille existante.
+- **Enfants** : Un enfant ne doit être rattaché qu'une seule fois à une même famille (contrainte `UNIQUE` sur `id_enfant + id_famille`).
 
-- `individu_*.ged` : exemples de fichiers GEDCOM d'entrée fournis pour
-  le développement et les tests.
-- `fusion.py` : script principal (sera ajouté lorsque le code sera
-  implémenté).
-- `tests/` : répertoire destiné aux tests `pytest`.
-- `.github/` : contient cette instruction ainsi que les autres
-  documents de configuration.
+## 5. Schéma de Données SQLite (Recommandé)
+- `individuals` : (id, nom, prenom, date_naiss, sexe, id_origine_gedcom)
+- `families` : (id, id_mari, id_femme, date_mariage, lieu_mariage)
+- `family_links` : (id_famille, id_individu, role) -- roles: 'HUSB', 'WIFE', 'CHIL'
 
-# Installation & exécution
+## 6. Standards de Développement
+- **Style** : Programmation orientée objet (classes pour `Individual`, `Family`, `DatabaseManager`).
+- **Qualité** : Annotations de type obligatoires, Docstrings (format Google), gestion des erreurs via Exceptions.
+- **Tests** : Utiliser `pytest`. Créer des tests unitaires pour chaque critère de matching.
+- **Journalisation** : Logs détaillés de chaque fusion pour traçabilité (Audit Trail).
 
-- Ce projet cible Python 3.
-- Installez la dépendance GEDCOM nécessaire :
-  ```bash
-  pip install python-gedcom
-  ```
-- Une fois le code en place, lancer les tests :
-  ```bash
-  pytest
-  ```
-- Exemple d'utilisation :
-  ```bash
-  python3 fusion.py input.ged output.ged
-  ```
-- Les fichiers GEDCOM en entrée peuvent être validés :
-  - visuellement avec Topola : https://pewu.github.io/topola-viewer/
-  - syntaxiquement avec Ged‑Inline : https://ged-inline.org/
-
-
-# Style & conventions
-
-- Utiliser la lib *pip install python-gedcom* pour manipuler le gedcom
-- Utiliser la db sqlite pour la gestion des individus et recherche de parties communes de l'arbre généalogique
-- Utiliser des classes pour représenter les individus et les familles
-- Utiliser des fonctions pour les opérations sur les individus et les familles
-- Utiliser des commentaires pour expliquer le code
-- Utiliser des noms de variables et de fonctions explicites
-- Utiliser des tests unitaires pour vérifier le bon fonctionnement du code
-- Utiliser un linter pour vérifier la qualité du code
-- Utiliser un formatteur pour uniformiser le code 
-- Utiliser des exceptions pour gérer les erreurs
-- Utiliser des docstrings pour documenter les fonctions et les classes
-- Utiliser des annotations de type pour améliorer la lisibilité du code
-- Utiliser des modules pour organiser le code
-- Utiliser des packages pour organiser les modules
-
-# Tests
-
-- Préférer `pytest` et stocker les tests dans un dossier `tests/`.
-- Les cas de test doivent couvrir l'analyse, la fusion et la validation
-du GEDCOM.
-
-# Notes supplémentaires
-
-- Le projet n'a pas de système de build particulier ; il suffit de lancer
-  le script.
-- Le README contient des informations de base sur l'usage et la
-  validation des GEDCOM.
-
+## 7. Commandes de Référence
+- Installation : `pip install python-gedcom`
+- Exécution : `python3 fusion.py <input1.ged> <input2.ged> ... <output.ged>`
+- Validation : Utiliser `pytest` pour valider la non-régression.
